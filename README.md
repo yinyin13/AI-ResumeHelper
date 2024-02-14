@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a chatbot app.
+This is a chatbot app that reads your file and answers questions about the file.
 
 ## How to Run
 
