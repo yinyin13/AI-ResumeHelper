@@ -5,6 +5,9 @@ import streamlit as st
 from llama_index.core import VectorStoreIndex
 from llama_index.llms.openai import OpenAI
 from llama_index.readers.file import PDFReader
+from dotenv import load_dotenv
+
+load_dotenv()
 
 st.set_page_config(
     page_title="Chat with the PDF",
@@ -30,6 +33,8 @@ if uploaded_file:
             reader = PDFReader()
             docs = reader.load_data(tmp.name)
             llm = OpenAI(
+                api_key=os.getenv("OPENAI_API_KEY"),
+                base_url=os.getenv("OPENAI_API_BASE"),
                 model="gpt-3.5-turbo",
                 temperature=0.0,
                 system_prompt="You are an expert on the content of the document, provide detailed answers to the questions. Use the document to support your answers.",
