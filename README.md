@@ -9,7 +9,7 @@ This is a chatbot app that reads your file and answers questions about the file.
 1. Clone this repository:
 
     ```bash
-    git clone https://github.com/yinyin13/techin510_lab5.git
+    git clone https://github.com/yinyin13/techin510_lab6.git
     ```
 
 2. Navigate to the project directory:
