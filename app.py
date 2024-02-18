@@ -10,57 +10,60 @@ from dotenv import load_dotenv
 load_dotenv()
 
 st.set_page_config(
-    page_title="Chat with the PDF",
-    page_icon="🦙",
+    page_title="Resume Helper",
+    page_icon=":female-technologist::skin-tone-2:",
     layout="centered",
-    initial_sidebar_state="auto",
     menu_items=None,
 )
 
-if "messages" not in st.session_state.keys():  # Initialize the chat messages history
+if "messages" not in st.session_state.keys():
     st.session_state.messages = [
-        {"role": "assistant", "content": "Ask me a question about your document!"}
+        {"role": "assistant", "content": "Hello!👋🏻 Need help with your resume? Upload your document to get started!"}
     ]
 
-uploaded_file = st.file_uploader("Upload a file")
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.write(message["content"])
+
+uploaded_file = st.file_uploader("Upload your resume")
 if uploaded_file:
     bytes_data = uploaded_file.read()
-    with NamedTemporaryFile(delete=False) as tmp:  # open a named temporary file
-        tmp.write(bytes_data)  # write data from the uploaded file into it
-        with st.spinner(
-            text="Loading and indexing the Streamlit docs – hang tight! This should take 1-2 minutes."
-        ):
+    with NamedTemporaryFile(delete=False) as tmp:
+        tmp.write(bytes_data)
+        with st.spinner(text="Loading and indexing the resume – hang tight! This should take 1-2 minutes."):
             reader = PDFReader()
             docs = reader.load_data(tmp.name)
-            llm = OpenAI(
+            st.session_state['llm'] = OpenAI(
                 api_key=os.getenv("OPENAI_API_KEY"),
                 base_url=os.getenv("OPENAI_API_BASE"),
                 model="gpt-3.5-turbo",
                 temperature=0.0,
-                system_prompt="You are an expert on the content of the document, provide detailed answers to the questions. Use the document to support your answers.",
+                system_prompt="You are a professional human resource manager in tech. You are taught that a strong resume should be brief but powerful, have strong action verbs (facilitated is not a strong action verb), and show impact of the experience. You will be provided with the document of the candidate's resume. Give detailed helpful feedback on what changes can be made to make the resume more effective. You should always tailor your response to the role the candidate is applying for. You should also provide a score out of 100. The score should reflect the quality of the resume for the role. Refer to the candidate as 'you' and the resume as 'your resume'.",
             )
             index = VectorStoreIndex.from_documents(docs)
-    os.remove(tmp.name)  # remove temp file
+    os.remove(tmp.name)
 
-    if "chat_engine" not in st.session_state.keys():  # Initialize the chat engine
-        st.session_state.chat_engine = index.as_chat_engine(
-            chat_mode="condense_question", verbose=False, llm=llm
-        )
+    if "chat_engine" not in st.session_state.keys():
+        st.session_state.chat_engine = index.as_chat_engine(chat_mode="condense_question", verbose=False, llm=st.session_state['llm'])
 
-if prompt := st.chat_input(
-    "Your question"
-):  # Prompt for user input and save to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
-
-for message in st.session_state.messages:  # Display the prior chat messages
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
-
-# If last message is not from assistant, generate a new response
-if st.session_state.messages[-1]["role"] != "assistant":
     with st.chat_message("assistant"):
-        with st.spinner("Thinking..."):
-            response = st.session_state.chat_engine.stream_chat(prompt)
+        with st.spinner("Reading and evaluating the resume..."):
+            response = st.session_state.chat_engine.stream_chat("Please evaluate the resume and mention what role will this resume be good for.")
             st.write_stream(response.response_gen)
             message = {"role": "assistant", "content": response.response}
-            st.session_state.messages.append(message)  # Add response to message history
+            st.session_state.messages.append(message)
+            st.session_state['llm'].system_prompt = "You are a professional human resource manager in tech who can provide answers to the user's questions based on their resume."
+
+if prompt := st.chat_input("Your question"):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.write(prompt)
+
+if st.session_state.messages[-1]["role"] != "assistant":
+    with st.spinner("Thinking..."):
+        response = st.session_state.chat_engine.stream_chat(prompt)
+        st.write_stream(response.response_gen)
+        message = {"role": "assistant", "content": response.response}
+        st.session_state.messages.append(message)
+        with st.chat_message("assistant"):
+            st.write(response.response)
