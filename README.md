@@ -30,19 +30,17 @@ This is a chatbot app that reads your file and answers questions about the file.
     streamlit run app.py
     ```
 
-<!-- To access the web app directly online, go to [Seattle Events](http://yinyin13-events-scraper.azurewebsites.net) to access the dashboard. -->
+To access the web app directly online, go to [Resume Helper](https://yinyin13-resume-helper.azurewebsites.net/) to access the dashboard.
 
 ## Lessons Learned
 
-During the development of this project, I learned to:
+From this project, I learned to:
+- Integrate OpenAI API into my project.
+- Use session state to maintain user interactions.
+- Optimize OpenAI accuracy with llama-index
 
-<!-- - Use data visualization libraries like Altair and Folium.
-- Initialize database and retrieve data using SQL.
-- Handle date filtering and geographical data visualization. -->
+## Future Improvements
 
-## Questions/Future Improvements
-
-<!-- - Improve UI to make it more intuitive and user-friendly.
-- Implement more advanced filtering options, such as filtering by event type or venue.
-- Enhance the performance of data retrieval and processing for large datasets.
-- Add features for users to save and share customized views of the dashboard. -->
+- Improve accuracy and quality of response through RAG and revised prompt
+- Add feature for users to revisit previous chat histories
+- Add feature to support analysis and comparison of multiple documents
