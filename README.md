@@ -1,8 +1,8 @@
-# Chatbot 🤖
+# AI Resume Helper 🤖
 
 ## Overview
 
-This is a chatbot app that reads your file and answers questions about the file.
+This is a chatbot app that reads your resume and gives feedback.
 
 ## How to Run
 
