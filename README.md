@@ -1,4 +1,4 @@
-# AI Resume Helper 🤖
+# 🤖 AI Resume Helper
 
 ## Overview
 
